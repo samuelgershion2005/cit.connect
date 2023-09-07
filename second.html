@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* CSS styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    #backgroundVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 104%;
+      height: 118%;
+      z-index: -1;
+      object-fit: cover;
+    }
+    
+    .container {
+      max-width:px;
+      margin:  auto;
+      padding: 80px;
+      background-color: transparent;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    #videoElement {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    /* Button styles */
+    button {
+      display: block;
+      margin: 9px 0;
+      padding:46px 50px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 78px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    
+    #userList {
+      margin-top: 80px;
+      color: #333;
+    }
+
+    #userList ul {
+      list-style: none;
+      padding: 10;
+    }
+
+    #userList li {
+      margin-bottom: 60px;
+    }
+  </style>
+</head>
+<body>
+  <video id="backgroundVideo" autoplay loop muted>
+    <source src="sg.mp4" type="video/mp4">
+  </video>
+
+  <div class="container">
+    <h1>Second Page</h1>
+    
+    <button id="startScreenButton">Start Screen Sharing</button>
+    <button id="startCameraButton">Start Camera</button>
+    <button id="stopButton">Stop Sharing</button>
+    
+    <video id="videoElement" autoplay></video>
+    
+    <div id="userList">
+      <h2>Connected Users:</h2>
+      <ul id="users"></ul>
+    </div>
+    
+    <script>
+      // Js
+      var startScreenButton = document.getElementById("startScreenButton");
+      var startCameraButton = document.getElementById("startCameraButton");
+      var stopButton = document.getElementById("stopButton");
+      var videoElement = document.getElementById("videoElement");
+      var userList = document.getElementById("users");
+      var mediaStream = null;
+      var connectedUsers = []; //  connected users
+
+      // to update the user list
+      function updateUserList() {
+        userList.innerHTML = "";
+        connectedUsers.forEach(function(user) {
+          var listItem = document.createElement("li");
+          listItem.textContent = user;
+          userList.appendChild(listItem);
+        });
+      }
+
+      // start screen sharing button 
+      startScreenButton.addEventListener("click", function() {
+        navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+          .then(function(stream) {
+            mediaStream = stream;
+            videoElement.srcObject = stream;
+          })
+          .catch(function(error) {
+            console.error("Error accessing display media: ", error);
+          });
+      });
+      
+      // start camera button 
+      startCameraButton.addEventListener("click", function() {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then(function(stream) {
+            mediaStream = stream;
+            videoElement.srcObject = stream;
+          })
+          .catch(function(error) {
+            console.error("Error accessing camera: ", error);
+          });
+      });
+      
+      // stop sharing button 
+      stopButton.addEventListener("click", function() {
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(function(track) {
+            track.stop();
+          });
+          mediaStream = null;
+          videoElement.srcObject = null;
+        }
+      });
+
+      // to handle new user connection
+      function handleNewUserConnect(username) {
+        connectedUsers.push(username);
+        updateUserList();
+      }
+
+      // to handle user disconnection
+      function handleUserDisconnect(username) {
+        connectedUsers = connectedUsers.filter(user => user !== username);
+        updateUserList();
+      }
+
+       
+      setTimeout(function() {
+        handleNewUserConnect("User1");
+      }, 1000);
+
+      setTimeout(function() {
+        handleNewUserConnect("User2");
+      }, 2000);
+
+      setTimeout(function() {
+        handleNewUserConnect("User3");
+      }, 3000);
+
+      setTimeout(function() {
+        handleUserDisconnect("User1");
+      }, 4000);
+    </script>
+  </div>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+   
+
+    
+    #chatBox {
+      position: absolute;
+      top: 500px; 
+      right: 1050px; 
+      width: 200px;
+      background-color: transparent;
+      padding: 9px;
+      box-shadow: 90 px px rgba(111, 244, 195, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+
+  <div id="chatBox">
+    <h2>Chat :)</h2>
+    <ul id="chatMessages"></ul>
+    <input type="text" id="messageInput" placeholder="Type here...">
+    <button id="sendMessageButton">launch</button>
+  </div>
+
+</body>
+</html>
